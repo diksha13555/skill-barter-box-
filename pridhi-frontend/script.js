@@ -158,3 +158,25 @@ function toggleProfileSection() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
+// Add this to the very end of your script.js file
+
+document.addEventListener("DOMContentLoaded", function() {
+    // This code runs as soon as your HTML page is loaded
+    console.log("Website loaded. Trying to fetch data from backend...");
+
+    // This is the API call to your backend (which is running in your other terminal)
+    fetch('http://127.0.0.1:5000/api/skills/popular')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("SUCCESS! Data received from backend:", data);
+            // You can now use this 'data' to change your HTML!
+        })
+        .catch(error => {
+            console.error("ERROR: Could not fetch data from backend:", error);
+        });
+});
