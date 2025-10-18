@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template_string
 from recommender import SkillRecommender
-from chatbot import SkillBarterChatbot
+from chatbox import SkillBarterChatbot
 import os
 
 app = Flask(__name__)
