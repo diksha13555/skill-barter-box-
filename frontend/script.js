@@ -85,7 +85,7 @@ style.textContent = `
         font-weight: 600 !important;
         width: 100px;
         font-weight: 700 !important; /* Makes the text bold like in the image */
-    font-size: 12px; /* Maintains size */
+    font-size: 13px; /* Maintains size */
     }
 `;
 document.head.appendChild(style);
