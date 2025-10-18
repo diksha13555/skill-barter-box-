@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Us - Neon Portal</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* General Setup (Consistent with Dashboard) */
+        :root {
+            --deep-blue: #0A192F;
+            --neon-blue: #00FFFF;
+            --dark-accent: #112240;
+            --text-color: #E6F1FF;
+            --neon-glow: 0 0 8px rgba(0, 255, 255, 0.7);
+            --success-green: #39FF14;
+            --error-red: #FF6347;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--deep-blue);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: radial-gradient(circle at center, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
+            padding: 20px;
+        }
+
+        /* --- Login/Signup Card Styling --- */
+        .auth-container {
+            background-color: var(--dark-accent);
+            padding: 40px;
+            border-radius: 12px;
+            position: relative;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+            border: 1px solid var(--neon-blue);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-container h2 {
+            font-size: 2rem;
+            color: var(--neon-blue);
+            text-shadow: var(--neon-glow);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- Tab Navigation --- */
+        .tab-nav {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            padding: 10px 0;
+            flex-grow: 1;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: var(--neon-blue);
+            font-weight: bold;
+            text-shadow: var(--neon-glow);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--neon-blue);
+            box-shadow: var(--neon-glow);
+        }
+
+        /* --- Form Elements --- */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .auth-container input[type="text"],
+        .auth-container input[type="email"],
+        .auth-container input[type="password"],
+        .auth-container input[type="number"],
+        .auth-container textarea {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background-color: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+            box-sizing: border-box;
+        }
+        
+        .auth-container textarea {
+            padding-left: 15px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(0, 255, 255, 0.6);
+            pointer-events: none;
+        }
+        
+        .form-group.no-icon input,
+        .form-group.no-icon textarea {
+            padding-left: 15px;
+        }
+        .form-group.top-icon i {
+            top: 15px;
+            transform: translateY(0%);
+        }
+
+        /* Validation Feedback */
+        .auth-container input:focus, .auth-container textarea:focus {
+            border-color: var(--neon-blue);
+            box-shadow: var(--neon-glow);
+        }
+        
+        /* Error Class */
+        .auth-container input.input-error,
+        .auth-container textarea.input-error {
+            border-color: var(--error-red) !important;
+            box-shadow: 0 0 10px var(--error-red) !important;
+        }
+
+        .auth-container input::placeholder, .auth-container textarea::placeholder {
+            color: rgba(230, 241, 255, 0.5);
+        }
+
+        /* --- Action Buttons --- */
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--neon-blue);
+            color: var(--deep-blue);
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--neon-blue);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+            flex-grow: 1;
+        }
+
+        .auth-button:hover {
+            background-color: #33FFFF;
+            box-shadow: 0 0 25px var(--neon-blue);
+        }
+        
+        .back-button {
+            background-color: transparent;
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            box-shadow: none;
+        }
+        .back-button:hover {
+            background-color: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .form-footer a {
+            color: var(--neon-blue);
+            text-decoration: none;
+            text-shadow: 0 0 3px rgba(0, 255, 255, 0.5);
+            transition: color 0.3s;
+        }
+        
+        /* Multi-step form content */
+        #signup-form { display: none; }
+        .signup-step { display: none; transition: opacity 0.3s; }
+        .signup-step.active { display: block; }
+        
+        /* --- Neon Status Message Overlay --- */
+        #status-message {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(17, 34, 64, 0.95);
+            border-radius: 12px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #status-message.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .status-icon i {
+            font-size: 3rem;
+            color: var(--success-green);
+            text-shadow: 0 0 15px var(--success-green);
+            margin-bottom: 20px;
+            animation: pulse 1s infinite alternate;
+        }
+        
+        .status-text {
+            color: var(--success-green);
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px var(--success-green);
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        /* Inline Form Error Notification */
+        #form-error-notification {
+            color: var(--error-red);
+            background-color: rgba(255, 99, 71, 0.1);
+            border: 1px solid var(--error-red);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            transition: opacity 0.3s;
+            text-align: left;
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 500px) {
+            .auth-container { padding: 30px 20px; max-width: 95%; }
+            .auth-container h2 { font-size: 1.5rem; }
+            .button-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        
+        <h2 id="auth-title">Secure Access Portal</h2>
+        
+        <div class="tab-nav">
+            <button class="tab-button active" id="login-tab">Log In</button>
+            <button class="tab-button" id="signup-tab">Sign Up</button>
+        </div>
+        
+        <div id="form-error-notification">
+            <i class="fas fa-exclamation-circle"></i> Please check the highlighted fields to continue.
+        </div>
+
+        <form id="login-form">
+            <div class="form-group"><i class="fas fa-envelope"></i><input type="email" placeholder="Email Address" required></div>
+            <div class="form-group"><i class="fas fa-lock"></i><input type="password" placeholder="Password" required></div>
+            <button type="submit" class="auth-button">Access Dashboard</button>
+            <p class="form-footer"><a href="#">Forgot Password?</a></p>
+        </form>
+
+        <form id="signup-form">
+            <input type="hidden" id="current-step" value="1">
+            
+            <div class="signup-step active" data-step="1">
+                <p style="color:var(--neon-blue); margin-bottom: 20px;">Step 1 of 3: Credentials</p>
+                <div class="form-group"><i class="fas fa-user"></i><input type="text" placeholder="Username" id="signup-username" required></div>
+                <div class="form-group"><i class="fas fa-envelope"></i><input type="email" id="signup-email" placeholder="Email Address" required></div>
+                <div class="form-group"><i class="fas fa-lock"></i><input type="password" placeholder="Create Password" required></div>
+                <div class="button-group">
+                    <button type="button" class="auth-button" onclick="nextStep(2)">Next: Profile Info <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div class="signup-step" data-step="2">
+                <p style="color:var(--neon-blue); margin-bottom: 20px;">Step 2 of 3: Profile Info</p>
+                 <div class="form-group"><i class="fas fa-calendar-alt"></i><input type="number" id="signup-age" placeholder="Your Age" min="16" max="99" required></div>
+                 <div class="form-group"><i class="fas fa-map-marker-alt"></i><input type="text" id="signup-location" placeholder="City/Base Location" required></div>
+                <div class="form-group no-icon"><input type="text" id="signup-resume" placeholder="Link to Resume (Optional)"></div>
+                <div class="button-group">
+                    <button type="button" class="auth-button back-button" onclick="nextStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button type="button" class="auth-button" onclick="nextStep(3)">Next: Dashboard Setup <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div class="signup-step" data-step="3">
+                <p style="color:var(--neon-blue); margin-bottom: 20px;">Step 3 of 3: Dashboard Setup</p>
+                <div class="form-group no-icon">
+                    <i class="fas fa-globe"></i>
+                    <input type="text" id="signup-website" placeholder="Main Website/Portfolio Link">
+                </div>
+                <div class="form-group no-icon top-icon">
+                    <i class="fas fa-folder"></i>
+                    <textarea id="signup-projects" placeholder="List your key projects (1 per line)"></textarea>
+                </div>
+                <div class="form-group no-icon top-icon">
+                    <i class="fas fa-bell"></i>
+                    <textarea id="signup-activity" placeholder="Recent activity/status update"></textarea>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="auth-button back-button" onclick="nextStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button type="submit" class="auth-button">Create Account</button>
+                </div>
+                <p class="form-footer">By submitting, you agree to the <a href="#">Terms & Conditions</a></p>
+            </div>
+        </form>
+        
+        <div id="status-message">
+            <div class="status-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="status-text">Synchronizing Data... Standby.</div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginTab = document.getElementById('login-tab');
+            const signupTab = document.getElementById('signup-tab');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const currentStepInput = document.getElementById('current-step');
+            const statusMessage = document.getElementById('status-message');
+            const errorNotification = document.getElementById('form-error-notification');
+
+            // --- Tab Switching Logic ---
+            function showForm(formToShow, tabToActivate, formToHide, tabToDeactivate) {
+                formToShow.style.display = 'block';
+                tabToActivate.classList.add('active');
+                formToHide.style.display = 'none';
+                tabToDeactivate.classList.remove('active');
+                errorNotification.style.display = 'none'; // Hide errors on tab switch
+            }
+
+            loginTab.addEventListener('click', () => {
+                showForm(loginForm, loginTab, signupForm, signupTab);
+            });
+
+            signupTab.addEventListener('click', () => {
+                showForm(signupForm, signupTab, loginForm, loginTab);
+                nextStep(1); 
+            });
+            
+            // Custom Status Display (Replaces alert() for success/loading)
+            function displayStatus(type, message, duration) {
+                const icon = statusMessage.querySelector('.status-icon i');
+                const text = statusMessage.querySelector('.status-text');
+                
+                if (type === 'success') {
+                    icon.className = 'fas fa-check-circle';
+                    icon.style.color = 'var(--success-green)';
+                    icon.style.textShadow = '0 0 15px var(--success-green)';
+                    text.style.color = 'var(--success-green)';
+                    text.style.textShadow = '0 0 8px var(--success-green)';
+                    text.textContent = message;
+                    
+                    statusMessage.style.display = 'flex';
+                    setTimeout(() => { statusMessage.classList.add('show'); }, 50);
+                } else if (type === 'error') {
+                    errorNotification.textContent = message;
+                    errorNotification.style.display = 'block';
+                    setTimeout(() => { errorNotification.style.display = 'none'; }, duration || 3000);
+                }
+            }
+
+
+            // --- Multi-Step Navigation Logic (Enhanced Validation) ---
+            window.nextStep = function(step) {
+                const currentStep = parseInt(currentStepInput.value);
+                const targetStep = document.querySelector(`.signup-step[data-step="${step}"]`);
+                const allSteps = document.querySelectorAll('.signup-step');
+
+                // Validation only runs when trying to go forward
+                if (step > currentStep) {
+                    const currentStepElement = document.querySelector(`.signup-step[data-step="${currentStep}"]`);
+                    const requiredInputs = currentStepElement.querySelectorAll('[required]');
+                    let isValid = true;
+                    
+                    requiredInputs.forEach(input => {
+                        if (!input.value.trim()) {
+                            input.classList.add('input-error');
+                            isValid = false;
+                        } else {
+                            input.classList.remove('input-error');
+                        }
+                    });
+
+                    if (!isValid) {
+                        displayStatus('error', 'Please fill out all required fields to continue.');
+                        return;
+                    }
+                }
+                
+                errorNotification.style.display = 'none';
+
+                if (targetStep) {
+                    allSteps.forEach(s => s.classList.remove('active'));
+                    targetStep.classList.add('active');
+                    currentStepInput.value = step;
+                }
+            };
+
+
+            // --- FINAL SUBMISSION AND DATA SAVING LOGIC ---
+            const redirectHandler = function(e) {
+                e.preventDefault(); 
+                
+                const isSignup = e.target.id === 'signup-form';
+                
+                if (isSignup) {
+                    // Final submission check: Ensure all required fields in Step 3 are checked
+                    const step3Inputs = document.querySelector('.signup-step[data-step="3"]').querySelectorAll('[required]');
+                    let isValid = true;
+                    step3Inputs.forEach(input => { 
+                        if (!input.value.trim()) { 
+                            input.classList.add('input-error'); 
+                            isValid = false;
+                        } else {
+                             input.classList.remove('input-error'); 
+                        }
+                    });
+                    
+                    if (!isValid) {
+                         displayStatus('error', 'Please complete the final required fields.');
+                         return; 
+                    }
+                    
+                    // 1. COLLECT DATA
+                    const userData = {
+                        username: document.getElementById('signup-username').value,
+                        email: document.getElementById('signup-email').value,
+                        age: document.getElementById('signup-age').value,
+                        location: document.getElementById('signup-location').value,
+                        resume: document.getElementById('signup-resume').value,
+                        website: document.getElementById('signup-website').value, // <-- Collected Here
+                        projects: document.getElementById('signup-projects').value.split('\n').filter(p => p.trim() !== ''),
+                        activity: document.getElementById('signup-activity').value,
+                    };
+
+                    // 2. SAVE DATA to localStorage
+                    localStorage.setItem('dashboardUserData', JSON.stringify(userData));
+                    
+                    displayStatus('success', 'Account created! Synchronizing data...', 2000);
+                } else {
+                    // Login Form submission
+                    displayStatus('success', 'Access granted! Loading dashboard...', 1500);
+                }
+                
+                // 3. REDIRECT AFTER ANIMATION
+                setTimeout(() => {
+                    window.location.href = 'profile.html'; 
+                }, 2000);
+            };
+        
+            loginForm.addEventListener('submit', redirectHandler);
+            signupForm.addEventListener('submit', redirectHandler);
+        });
+    </script>
+</body>
+</html>
