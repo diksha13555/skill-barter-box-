@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("Website loaded. Trying to fetch data from backend...");
 
     // This is the API call to your backend (which is running in your other terminal)
-    fetch('http://127.0.0.1:5000/api/skills/popular')
+fetch('https://skill-barter-box.onrender.com/api/skills/popular')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
