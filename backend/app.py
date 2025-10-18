@@ -3,8 +3,10 @@ from recommender import SkillRecommender
 from chatbox import SkillBarterChatbot
 import os
 
+from flask_cors import CORS
 app = Flask(__name__)
 
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 # Initialize AI modules
 recommender = SkillRecommender()
 chatbot = SkillBarterChatbot(use_openai=False)  # Set to True with API key
