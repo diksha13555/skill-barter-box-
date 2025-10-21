@@ -225,5 +225,5 @@ if __name__ == "__main__":
     for msg in test_messages:
         print(f"\n User: {msg}")
         response = bot.chat(msg, user_context)
-        print(f"🤖 Bot: {response['response']}")
+        print(f" Bot: {response['response']}")
         print(f"Intent: {response['intent']}")
