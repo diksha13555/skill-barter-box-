@@ -21,25 +21,25 @@ class SkillBarterChatbot:
             use_openai: Whether to use OpenAI API (requires API key)
             api_key: OpenAI API key (optional, can use env variable)
         """
-        # ✅ If api_key not provided, load from environment variable
+        
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         
 
 
-        # ✅ Flag to enable or disable OpenAI modesk
+       
         self.use_openai = use_openai and self.api_key is not None
         self.conversation_history = []
 
-        # ✅ Initialize OpenAI client only if key and flag are valid
+        
         if self.use_openai:
             try:
                 self.openai_client = OpenAI(api_key=self.api_key)
-                print("✅ OpenAI API initialized successfully!")
+                print(" OpenAI API initialized successfully!")
             except Exception as e:
-                print(f"❌ Error initializing OpenAI: {e}")
+                print(f" Error initializing OpenAI: {e}")
                 self.use_openai = False
         else:
-            print("⚠️ Running in rule-based mode (OpenAI disabled).")
+            print("Running in rule-based mode (OpenAI disabled).")
 
         # Intent patterns (unchanged)
         self.intent_patterns = {
@@ -59,8 +59,8 @@ class SkillBarterChatbot:
 
         self.responses = {
             "greeting": [
-                "Hello {user_name}! 👋 Welcome to SkillBarterBox! What would you like to do today?",
-                "Hi {user_name}! 😊 Ready to exchange skills? How can I help?",
+                "Hello {user_name}! Welcome to SkillBarterBox! What would you like to do today?",
+                "Hi {user_name}!  Ready to exchange skills? How can I help?",
             ],
             "how_it_works": [
                 "SkillBarterBox is simple! Create your profile with skills to teach/learn, and our AI matches you with the perfect partner. 100% free, no payment needed! 🎓",
@@ -78,7 +78,7 @@ class SkillBarterChatbot:
                 "SkillBarterBox is completely free! 💸 No fees — it’s all about sharing and learning together.",
             ],
             "safety": [
-                "Your safety matters. We verify users and allow you to report or review others for transparency. 🛡️",
+                "Your safety matters. We verify users and allow you to report or review others for transparency. ",
             ],
             "help": [
                 "I'm here to assist! You can ask about matches, scheduling, profiles, or safety guidelines.",
@@ -90,11 +90,11 @@ class SkillBarterChatbot:
                 "Sorry you're having trouble! Could you describe the issue more? I can guide you or connect you with support.",
             ],
             "farewell": [
-                "Goodbye! 👋 Keep learning and teaching on SkillBarterBox!",
-                "See you soon! 💫 Keep growing your skills!",
+                "Goodbye!  Keep learning and teaching on SkillBarterBox!",
+                "See you soon!  Keep growing your skills!",
             ],
             "thanks": [
-                "You're most welcome! 🙌 Anything else I can help with?",
+                "You're most welcome! Anything else I can help with?",
             ],
             "default": [
                 "I didn’t quite get that. Can you rephrase? I can help with matches, scheduling, or your profile.",
@@ -135,7 +135,7 @@ class SkillBarterChatbot:
             messages = [{"role": "system", "content": system_prompt}] + self.conversation_history[-10:]
 
             response = self.openai_client.chat.completions.create(
-                model="gpt-4o-mini",  # ✅ use the latest fast model
+                model="gpt-4o-mini",  
                 messages=messages,
                 max_tokens=200,
                 temperature=0.7,
@@ -146,7 +146,7 @@ class SkillBarterChatbot:
             return reply
 
         except Exception as e:
-            print(f"⚠️ OpenAI API error: {e}. Falling back to rule-based response.")
+            print(f" OpenAI API error: {e}. Falling back to rule-based response.")
             return self.get_rule_based_response(message, None)
 
     def chat(self, message: str, user_context: Optional[Dict] = None) -> Dict:
@@ -168,7 +168,7 @@ class SkillBarterChatbot:
             }
 
         except Exception as e:
-            print(f"❌ Chat error: {e}")
+            print(f"Chat error: {e}")
             return {
                 "response": "I'm having trouble right now. Please try again later.",
                 "intent": "error",
@@ -200,11 +200,10 @@ class SkillBarterChatbot:
         self.conversation_history = []
 
 
-# === Example Test ===
 if __name__ == "__main__":
     print("=== SkillBarterBox Chatbot (AI Mode) ===\n")
 
-    # ✅ Use AI mode (set True)
+
     bot = SkillBarterChatbot(use_openai=True)
 
     user_context = {
@@ -224,7 +223,7 @@ if __name__ == "__main__":
     ]
 
     for msg in test_messages:
-        print(f"\n🧑 User: {msg}")
+        print(f"\n User: {msg}")
         response = bot.chat(msg, user_context)
         print(f"🤖 Bot: {response['response']}")
         print(f"Intent: {response['intent']}")
