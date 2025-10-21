@@ -1,10 +1,10 @@
 
-
 import os
 import json
 from typing import Dict, List, Optional
 import re
 import random
+from openai import OpenAI
 
 
 class SkillBarterChatbot:
@@ -12,7 +12,7 @@ class SkillBarterChatbot:
     Chatbot assistant for SkillBarterBox platform
     Supports both OpenAI API and rule-based fallback responses
     """
-    
+
     def __init__(self, use_openai: bool = False, api_key: Optional[str] = None):
         """
         Initialize chatbot
@@ -21,25 +21,27 @@ class SkillBarterChatbot:
             use_openai: Whether to use OpenAI API (requires API key)
             api_key: OpenAI API key (optional, can use env variable)
         """
-        self.use_openai = use_openai
+        # ✅ If api_key not provided, load from environment variable
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-        self.conversation_history = []
         
-        if self.use_openai and self.api_key:
+
+
+        # ✅ Flag to enable or disable OpenAI modesk
+        self.use_openai = use_openai and self.api_key is not None
+        self.conversation_history = []
+
+        # ✅ Initialize OpenAI client only if key and flag are valid
+        if self.use_openai:
             try:
-                import openai
-                self.openai_client = openai.OpenAI(api_key=self.api_key)
-                print("OpenAI API initialized successfully")
-            except ImportError:
-                print("OpenAI package not found. Install with: pip install openai")
-                self.use_openai = False
+                self.openai_client = OpenAI(api_key=self.api_key)
+                print("✅ OpenAI API initialized successfully!")
             except Exception as e:
-                print(f"Error initializing OpenAI: {e}")
+                print(f"❌ Error initializing OpenAI: {e}")
                 self.use_openai = False
         else:
-            self.use_openai = False
-        
-        # MODIFIED: Expanded intent patterns for more questions
+            print("⚠️ Running in rule-based mode (OpenAI disabled).")
+
+        # Intent patterns (unchanged)
         self.intent_patterns = {
             "greeting": [r"hello", r"hi", r"hey", r"good morning", r"good evening"],
             "how_it_works": [r"how.*work", r"how.*use", r"how.*platform", r"explain"],
@@ -49,221 +51,180 @@ class SkillBarterChatbot:
             "pricing": [r"cost", r"price", r"fee", r"payment", r"free"],
             "safety": [r"safe", r"trust", r"verify", r"review", r"rating", r"report user"],
             "help": [r"help", r"support", r"assist", r"problem", r"issue"],
-            # NEW: Added new intents for more comprehensive answers
             "profile_management": [r"profile", r"update my skill", r"change my info", r"my account"],
             "troubleshooting": [r"not working", r"can't find", r"match.*show up", r"error"],
             "farewell": [r"bye", r"goodbye", r"see you", r"quit"],
             "thanks": [r"thank you", r"thanks", r"appreciate it"],
         }
-        
-        # MODIFIED: Expanded responses, with placeholders for personalization
+
         self.responses = {
             "greeting": [
-                "Hello {user_name}! Welcome to SkillBarterBox! 🎓 I'm here to help you. What's on your mind?",
-                "Hi there, {user_name}! Ready to discover amazing skill exchange opportunities? How can I assist?",
+                "Hello {user_name}! 👋 Welcome to SkillBarterBox! What would you like to do today?",
+                "Hi {user_name}! 😊 Ready to exchange skills? How can I help?",
             ],
             "how_it_works": [
-                "SkillBarterBox is simple! 1. Create your profile with skills to teach/learn. 2. Our AI matches you with users. 3. Schedule sessions and start learning! No fees, just mutual growth.",
+                "SkillBarterBox is simple! Create your profile with skills to teach/learn, and our AI matches you with the perfect partner. 100% free, no payment needed! 🎓",
             ],
             "find_match": [
-                "To find your perfect match, head to the 'Find Matches' page. Our AI will suggest users based on your skills to teach ({skills_to_teach}) and skills to learn ({skills_to_learn}).",
+                "You can find skill partners based on your teaching skills ({skills_to_teach}) and learning goals ({skills_to_learn}).",
             ],
             "schedule": [
-                "Scheduling is easy! Once connected, click 'Schedule Session' on a user's profile, pick a time that works for both, and it's added to your calendar. 📅",
+                "Scheduling is easy! After finding a match, click 'Schedule Session' and pick your preferred time. 🕓",
             ],
             "skills": [
-                "You can teach or learn anything! Popular skills include: 💻 Tech, 🎨 Creative, 🗣️ Languages, and 💼 Business. What are you interested in?",
+                "You can exchange any skill! Popular ones include coding, design, music, and languages. What’s your favorite?",
             ],
             "pricing": [
-                "SkillBarterBox is 100% FREE! 🎉 We believe in the power of community and skill exchange. You learn by teaching, and teach by learning. Everyone wins!",
+                "SkillBarterBox is completely free! 💸 No fees — it’s all about sharing and learning together.",
             ],
             "safety": [
-                "Your safety is our priority. We have a user verification system, ratings/reviews after each session, and a 'Report User' feature if you encounter any issues. 🛡️",
+                "Your safety matters. We verify users and allow you to report or review others for transparency. 🛡️",
             ],
             "help": [
-                "I'm here to help! You can ask me about finding matches, scheduling, managing your profile, or any other platform features. What do you need help with?",
+                "I'm here to assist! You can ask about matches, scheduling, profiles, or safety guidelines.",
             ],
-            # NEW: Responses for the new intents
             "profile_management": [
-                "You can update your skills, name, and other information in the 'My Profile' section. Would you like me to take you there?",
+                "You can update your skills and details in the 'My Profile' section. Would you like to open it?",
             ],
             "troubleshooting": [
-                "I'm sorry to hear you're having trouble. Could you please describe the issue in more detail? You can also visit our Help Center or contact support for direct assistance.",
+                "Sorry you're having trouble! Could you describe the issue more? I can guide you or connect you with support.",
             ],
             "farewell": [
-                "Goodbye! Happy learning, and feel free to reach out anytime.",
-                "See you later! Come back soon to continue your skill exchange journey."
+                "Goodbye! 👋 Keep learning and teaching on SkillBarterBox!",
+                "See you soon! 💫 Keep growing your skills!",
             ],
             "thanks": [
-                "You're welcome! I'm here to help if you have any more questions.",
-                "My pleasure! Is there anything else I can assist you with?"
+                "You're most welcome! 🙌 Anything else I can help with?",
             ],
             "default": [
-                "I'm not sure I understand. Could you rephrase? I can help with finding matches, scheduling sessions, or managing your profile.",
+                "I didn’t quite get that. Can you rephrase? I can help with matches, scheduling, or your profile.",
             ],
         }
-    
+
     def detect_intent(self, message: str) -> str:
-        """Detect user intent from message using pattern matching"""
         message_lower = message.lower()
-        
         for intent, patterns in self.intent_patterns.items():
             for pattern in patterns:
                 if re.search(pattern, message_lower):
                     return intent
-        
         return "default"
-    
-    # MODIFIED: Function now accepts user_context for personalization
+
     def get_rule_based_response(self, message: str, user_context: Optional[Dict]) -> str:
-        """Generate response using rule-based system and personalize it"""
         intent = self.detect_intent(message)
-        
-        # Choose a random response template for the detected intent
         response_template = random.choice(self.responses.get(intent, self.responses["default"]))
-        
-        # Personalize the response using user_context
+
         if user_context:
-            response = response_template.format(
+            return response_template.format(
                 user_name=user_context.get("user_name", "there"),
                 skills_to_teach=", ".join(user_context.get("skills_to_teach", ["any skill"])),
                 skills_to_learn=", ".join(user_context.get("skills_to_learn", ["new skills"]))
             )
         else:
-            # Fallback for when no context is provided
-            response = response_template.format(
-                user_name="there",
-                skills_to_teach="your skills",
-                skills_to_learn="new skills"
-            )
-            
-        return response
-    
+            return response_template.format(user_name="there", skills_to_teach="your skills", skills_to_learn="new skills")
+
     def get_openai_response(self, message: str) -> str:
         """Generate response using OpenAI API"""
         try:
-            system_prompt = """You are a helpful assistant for SkillBarterBox, a skill exchange platform. 
-            Key features: 100% free, AI-powered matching, community-driven learning.
-            Be friendly, concise, and helpful."""
+            system_prompt = (
+                "You are SkillBarterBox's assistant. "
+                "You help users find skill matches, manage profiles, and understand the platform. "
+                "Be friendly, brief, and clear."
+            )
 
             self.conversation_history.append({"role": "user", "content": message})
-            
             messages = [{"role": "system", "content": system_prompt}] + self.conversation_history[-10:]
-            
+
             response = self.openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4o-mini",  # ✅ use the latest fast model
                 messages=messages,
                 max_tokens=200,
-                temperature=0.7
+                temperature=0.7,
             )
-            
-            assistant_message = response.choices[0].message.content
-            self.conversation_history.append({"role": "assistant", "content": assistant_message})
-            return assistant_message
-            
+
+            reply = response.choices[0].message.content
+            self.conversation_history.append({"role": "assistant", "content": reply})
+            return reply
+
         except Exception as e:
-            print(f"OpenAI API error: {e}. Falling back to rule-based response.")
-            return self.get_rule_based_response(message, None) # Pass None for context on fallback
-    
+            print(f"⚠️ OpenAI API error: {e}. Falling back to rule-based response.")
+            return self.get_rule_based_response(message, None)
+
     def chat(self, message: str, user_context: Optional[Dict] = None) -> Dict:
-        """
-        Main chat function - processes user message and returns response
-        """
         try:
-            if self.use_openai and self.api_key:
+            if self.use_openai:
                 response_text = self.get_openai_response(message)
             else:
-                # MODIFIED: Pass user_context to the rule-based function
                 response_text = self.get_rule_based_response(message, user_context)
-            
+
             intent = self.detect_intent(message)
-            suggestions = self._generate_suggestions(intent, user_context)
+            suggestions = self._generate_suggestions(intent)
             action = self._get_action_button(intent)
-            
+
             return {
                 "response": response_text,
                 "intent": intent,
                 "suggestions": suggestions,
-                "action": action
+                "action": action,
             }
-            
+
         except Exception as e:
-            print(f"Chat error: {e}")
+            print(f"❌ Chat error: {e}")
             return {
-                "response": "I'm having trouble right now. Please try again or contact support.",
+                "response": "I'm having trouble right now. Please try again later.",
                 "intent": "error",
                 "suggestions": [],
-                "action": None
+                "action": None,
             }
-    
-    def _generate_suggestions(self, intent: str, user_context: Optional[Dict]) -> List[str]:
-        """Generate follow-up suggestions based on intent"""
+
+    def _generate_suggestions(self, intent: str) -> List[str]:
         suggestion_map = {
-            "greeting": ["How does SkillBarterBox work?", "Help me find matches", "What skills can I learn?"],
-            "how_it_works": ["Find my matches", "Is it really free?", "How do I update my profile?"],
-            "find_match": ["How do I schedule a session?", "Tell me about safety.", "View my profile"],
-            "schedule": ["How do calendar reminders work?", "Can I reschedule?", "Contact Support"],
-            "skills": ["Find matches for my skills", "Add new skills to my profile", "See popular skills"],
-            "pricing": ["How do you ensure safety?", "Start learning now", "Find matches"],
-            # NEW: Suggestions for new intents
-            "profile_management": ["Find matches", "How does scheduling work?", "Is it safe?"],
-            "thanks": ["How does this work?", "Find me a match", "Tell me about safety"],
+            "greeting": ["How does it work?", "Find me a match", "What can I learn?"],
+            "how_it_works": ["Find my matches", "Is it free?", "Update profile"],
+            "find_match": ["Schedule session", "Safety tips", "View profile"],
+            "skills": ["Popular skills", "Add new skills", "See my matches"],
+            "thanks": ["Find a match", "Learn more", "Exit"],
         }
-        
-        return suggestion_map.get(intent, ["How can you help?", "Main menu"])
-    
+        return suggestion_map.get(intent, ["Help", "Main menu"])
+
     def _get_action_button(self, intent: str) -> Optional[str]:
-        """Return action button based on intent"""
         action_map = {
             "find_match": "Find Matches",
             "schedule": "View Calendar",
             "skills": "Edit Profile",
             "help": "Contact Support",
-            # NEW: Actions for new intents
             "profile_management": "Go to Profile",
-            "safety": "Read Safety Guidelines"
         }
-        
         return action_map.get(intent)
-    
+
     def reset_conversation(self):
-        """Clear conversation history"""
         self.conversation_history = []
 
 
-# Example usage and testing
+# === Example Test ===
 if __name__ == "__main__":
-    print("=== SkillBarterBox Chatbot Test ===\n")
-    
-    bot = SkillBarterChatbot(use_openai=False)
-    
-    # NEW: Define a sample user context for personalized responses
-    sample_context = {
+    print("=== SkillBarterBox Chatbot (AI Mode) ===\n")
+
+    # ✅ Use AI mode (set True)
+    bot = SkillBarterChatbot(use_openai=True)
+
+    user_context = {
         "user_id": "user123",
         "user_name": "Alex",
         "skills_to_teach": ["Python", "Guitar"],
-        "skills_to_learn": ["React", "Photography"]
+        "skills_to_learn": ["React", "Photography"],
     }
-    
-    # MODIFIED: Expanded test messages to check new functionality
+
     test_messages = [
-        "Hi there!",
-        "How do I find a match?",
-        "How do I update my skills?",
-        "Is it safe to report a user?",
-        "That's not working for me",
-        "thanks so much",
-        "bye",
+        "Hello!",
+        "How does this platform work?",
+        "Find me a match for Python",
+        "Is it safe?",
+        "Thanks!",
+        "Bye!",
     ]
-    
+
     for msg in test_messages:
-        print(f"User: {msg}")
-        # MODIFIED: Pass the context to the chat function
-        response = bot.chat(msg, user_context=sample_context)
-        print(f"Bot: {response['response']}")
+        print(f"\n🧑 User: {msg}")
+        response = bot.chat(msg, user_context)
+        print(f"🤖 Bot: {response['response']}")
         print(f"Intent: {response['intent']}")
-        if response['suggestions']:
-            print(f"Suggestions: {', '.join(response['suggestions'])}")
-        if response['action']:
-            print(f"Action: [{response['action']}]")
-        print("-" * 50)
