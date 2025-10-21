@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 270 40% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 270 35% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 270 35% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 270 50% 15%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 270 30% 20%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 270 25% 25%;
+    --muted-foreground: 270 10% 65%;
+
+    --accent: 270 35% 18%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 270 20% 25%;
+    --input: 270 25% 20%;
+    --ring: 24 100% 60%;
+
+    --neon-orange: 24 100% 60%;
+    --neon-orange-glow: 24 100% 50%;
+    --purple-dark: 270 50% 10%;
+    --purple-medium: 270 40% 15%;
+    --purple-light: 270 30% 25%;
+
+    --gradient-hero: linear-gradient(135deg, hsl(270 50% 10%), hsl(270 40% 8%), hsl(280 45% 12%));
+    --gradient-card: linear-gradient(145deg, hsl(270 35% 12% / 0.6), hsl(270 30% 15% / 0.4));
+    --glow-orange: 0 0 30px hsl(var(--neon-orange) / 0.5);
+    
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 270 40% 8%;
+    --foreground: 0 0% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background: var(--gradient-hero);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+  }
+  
+  .text-neon-orange {
+    color: hsl(var(--neon-orange));
+  }
+  
+  .bg-neon-orange {
+    background-color: hsl(var(--neon-orange));
+  }
+  
+  .border-neon-orange {
+    border-color: hsl(var(--neon-orange));
+  }
+  
+  .glow-orange {
+    box-shadow: var(--glow-orange);
+  }
+  
+  .hover-glow {
+    transition: all 0.3s ease;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: var(--glow-orange);
+    transform: translateY(-2px);
+  }
+  
+  .glassmorphism {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
