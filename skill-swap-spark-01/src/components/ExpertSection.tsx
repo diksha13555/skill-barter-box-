@@ -1,9 +1,9 @@
 // --- 1. IMPORT YOUR IMAGES HERE ---
 import marquesImg from '@/assets/tech.jpg';
-import simoneImg from '@/assets/computers.jpg'; 
+import simoneImg from '@/assets/robotic.jpg'; 
 import aaronImg from '@/assets/graphic.jpg';
 import amelieImg from '@/assets/fashion.jpg';
-import aliImg from '@/assets/programming.jpg';
+import aliImg from '@/assets/productivity.jpg';
 import candiceImg from '@/assets/photography.jpg';
 
 const experts = [
