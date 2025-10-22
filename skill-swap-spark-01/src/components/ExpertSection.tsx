@@ -12,7 +12,7 @@ const experts = [
   { name: 'Aaron Draplin', skill: 'Graphic Design', image: aaronImg },
   { name: 'Amelie Solange', skill: 'Fashion Design', image: amelieImg },
   { name: 'Ali Abdaal', skill: 'Productivity & Business', image: aliImg },
-  { name: 'Candice Baylor', skill: 'Photography', image: candiceImg }
+  { name: 'Sam Baylor', skill: 'Photography', image: candiceImg }
 ];
 
 const ExpertSection = () => {
