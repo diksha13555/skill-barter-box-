@@ -4,3 +4,4 @@ python-dotenv
 gunicorn
 numpy
 scikit-learn
+flask-cors

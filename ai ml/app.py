@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify, render_template_string
+from flask_cors import CORS  # 
 from recommender import SkillRecommender
 from chatbot import SkillBarterChatbot
 import os
 
 app = Flask(__name__)
-
+CORS(app)
 # Initialize AI modules
 recommender = SkillRecommender()
 chatbot = SkillBarterChatbot(use_openai=True)  # Set to True with API key
