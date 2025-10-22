@@ -43,7 +43,7 @@ const Chatbot = () => {
     try {
       
       // --- THIS IS THE UPDATED LINE ---
-      const response = await fetch('https://skill-barter-3rvd.onrender.com/api/chat', {
+      const response = await fetch('https://skill-barter-backend-y6z4.onrender.com/api/chat', {
       // --- THIS IS THE UPDATED LINE ---
 
         method: 'POST',
