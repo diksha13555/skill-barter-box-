@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # Initialize AI modules
 recommender = SkillRecommender()
-chatbot = SkillBarterChatbot(use_openai=False)  # Set to True with API key
+chatbot = SkillBarterChatbot(use_openai=True)  # Set to True with API key
 
 # Simple HTML interface for testing
 HTML_TEMPLATE = '''
